@@ -1,6 +1,6 @@
 # 河海大学自动健康打卡 - GUI
 ## 截图
-![https://github.com/Xiderowg/HHUHealthCheckinGUI/blob/master/Screenshot.jpg]](https://github.com/Xiderowg/HHUHealthCheckinGUI/blob/master/Screenshot.jpg)
+![https://github.com/Xiderowg/HHUHealthCheckinGUI/blob/master/Screenshot.jpg](https://github.com/Xiderowg/HHUHealthCheckinGUI/blob/master/Screenshot.jpg)
 ## 功能
 * 定时打卡(18~20点)
 * 打卡失败自动重试
