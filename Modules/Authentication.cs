@@ -47,6 +47,7 @@ namespace HHUCheckin.Modules
         /// <returns></returns>
         public CookieContainer Do()
         {
+            GlobalVars.log.Info($"正在进行登录验证，用户名【{this.Username}】");
             FrmMain.statusHandler?.Invoke(null, new Msg("正在进行登录验证"));
             // 首先访问登录页面，获取诸如AMAuthCookie=???;Domain=.hhu.edu.cn;Path=/的Cookie，这一步没测试过是不是必要的
             CookieContainer cookies = new CookieContainer();
@@ -64,6 +65,7 @@ namespace HHUCheckin.Modules
             }
             catch (TaskCanceledException e)
             {
+                GlobalVars.log.Error($"获取登录界面Cookie失败，可能是网络没有连接？详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("获取初始Cookie失败，请检查网络链接"));
                 return null;
             }
@@ -84,6 +86,7 @@ namespace HHUCheckin.Modules
             }
             catch (TaskCanceledException e)
             {
+                GlobalVars.log.Error($"登录账号失败，可能是网络没有连接？详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("登录账号失败，请检查网络链接"));
                 return null;
             }
@@ -100,11 +103,13 @@ namespace HHUCheckin.Modules
             }
             if (!isLogin)
             {
+                GlobalVars.log.Error("账号或密码错误");
                 FrmMain.statusHandler?.Invoke(null, new Msg("账号或密码错误，请检查"));
                 return null;
             }
             // 调试信息
             Console.WriteLine($"Cookies count: {cookies.Count}");
+            GlobalVars.log.Info($"用户【{Username}】登录成功");
             FrmMain.statusHandler?.Invoke(null, new Msg("登录成功"));
             return cookies;
         }

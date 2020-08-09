@@ -14,8 +14,9 @@ namespace HHUCheckin
     public partial class FrmMain : Form
     {
         public static EventHandler<Msg> statusHandler;
-        public DateTime lastCheckTime=new DateTime(1990,1,1);
+        public DateTime lastCheckTime = new DateTime(1990, 1, 1);
         public bool todayChecked = false;
+        private int LagTime = 5;
 
         public FrmMain()
         {
@@ -35,12 +36,12 @@ namespace HHUCheckin
             string email = Txt_Email.Text.Trim();
             if (string.IsNullOrWhiteSpace(userName))
             {
-                MessageBox.Show("用户名不可为空！");
+                MessageBox.Show("用户名不可为空！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (string.IsNullOrWhiteSpace(passWord))
             {
-                MessageBox.Show("密码不可为空！");
+                MessageBox.Show("密码不可为空！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             // 保存用户名和密码
@@ -56,17 +57,22 @@ namespace HHUCheckin
                 ConfigHelper.UpdateAppConfig("Password", "");
                 ConfigHelper.UpdateAppConfig("EMail", "");
             }
+            // 读取滞后时间
+            if (!int.TryParse(Txt_LagTime.Text, out LagTime))
+                LagTime = 5;
             // 打卡
             if (Checkin(userName, passWord))
             {
-                MessageBox.Show("打卡成功！");
+                GlobalVars.log.Info(string.Format("用户【{0}】打卡成功", userName));
+                MessageBox.Show("打卡成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Lbl_LastCheckinTime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 if (Chk_SendMail.Checked)
                     Task.Run(() => MailHelper.SendMail(email, $"【{userName}】同学你好：\n 你已经于【{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}】打卡成功! \n HHU非官方快捷打卡平台"));
             }
             else
             {
-                MessageBox.Show("打卡失败！");
+                GlobalVars.log.Error(string.Format("用户【{0}】打卡失败", userName));
+                MessageBox.Show("打卡失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             statusHandler?.Invoke(null, new Msg("初始化完成"));
         }
@@ -119,8 +125,11 @@ namespace HHUCheckin
         private void LoopTimer_Tick(object sender, EventArgs e)
         {
             var now = DateTime.Now;
+            // 更新滞后时间
+            if (int.TryParse(Txt_LagTime.Text, out LagTime))
+                LagTime = 5;
             // 更新预计打卡时间
-            if (now.Hour>=18 && now.Hour<=21 && now.Minute >= 5)
+            if (now.Hour >= 18 && now.Hour <= 21 && now.Minute >= LagTime)
             {
                 if (now.Day != lastCheckTime.Day)
                     todayChecked = false;

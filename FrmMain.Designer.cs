@@ -46,6 +46,9 @@
             this.label5 = new System.Windows.Forms.Label();
             this.Chk_SendMail = new System.Windows.Forms.CheckBox();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.label6 = new System.Windows.Forms.Label();
+            this.Txt_LagTime = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -85,7 +88,7 @@
             // 
             this.Btn_Checkin.Location = new System.Drawing.Point(249, 11);
             this.Btn_Checkin.Name = "Btn_Checkin";
-            this.Btn_Checkin.Size = new System.Drawing.Size(146, 98);
+            this.Btn_Checkin.Size = new System.Drawing.Size(146, 134);
             this.Btn_Checkin.TabIndex = 4;
             this.Btn_Checkin.Text = "打卡";
             this.Btn_Checkin.UseVisualStyleBackColor = true;
@@ -94,7 +97,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 191);
+            this.label3.Location = new System.Drawing.Point(9, 225);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(52, 15);
             this.label3.TabIndex = 7;
@@ -104,7 +107,7 @@
             // 
             this.Lbl_Status.AutoSize = true;
             this.Lbl_Status.ForeColor = System.Drawing.Color.DarkGreen;
-            this.Lbl_Status.Location = new System.Drawing.Point(67, 191);
+            this.Lbl_Status.Location = new System.Drawing.Point(67, 225);
             this.Lbl_Status.Name = "Lbl_Status";
             this.Lbl_Status.Size = new System.Drawing.Size(82, 15);
             this.Lbl_Status.TabIndex = 8;
@@ -115,7 +118,7 @@
             this.Chk_Rememberme.AutoSize = true;
             this.Chk_Rememberme.Checked = true;
             this.Chk_Rememberme.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Chk_Rememberme.Location = new System.Drawing.Point(12, 125);
+            this.Chk_Rememberme.Location = new System.Drawing.Point(12, 159);
             this.Chk_Rememberme.Name = "Chk_Rememberme";
             this.Chk_Rememberme.Size = new System.Drawing.Size(74, 19);
             this.Chk_Rememberme.TabIndex = 9;
@@ -133,7 +136,7 @@
             this.Chk_AutoCheckin.AutoSize = true;
             this.Chk_AutoCheckin.Checked = true;
             this.Chk_AutoCheckin.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Chk_AutoCheckin.Location = new System.Drawing.Point(93, 125);
+            this.Chk_AutoCheckin.Location = new System.Drawing.Point(93, 159);
             this.Chk_AutoCheckin.Name = "Chk_AutoCheckin";
             this.Chk_AutoCheckin.Size = new System.Drawing.Size(89, 19);
             this.Chk_AutoCheckin.TabIndex = 10;
@@ -144,7 +147,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 161);
+            this.label4.Location = new System.Drawing.Point(12, 195);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(127, 15);
             this.label4.TabIndex = 11;
@@ -154,7 +157,7 @@
             // 
             this.Lbl_LastCheckinTime.AutoSize = true;
             this.Lbl_LastCheckinTime.ForeColor = System.Drawing.Color.Black;
-            this.Lbl_LastCheckinTime.Location = new System.Drawing.Point(145, 161);
+            this.Lbl_LastCheckinTime.Location = new System.Drawing.Point(145, 195);
             this.Lbl_LastCheckinTime.Name = "Lbl_LastCheckinTime";
             this.Lbl_LastCheckinTime.Size = new System.Drawing.Size(37, 15);
             this.Lbl_LastCheckinTime.TabIndex = 12;
@@ -179,7 +182,7 @@
             // Chk_SendMail
             // 
             this.Chk_SendMail.AutoSize = true;
-            this.Chk_SendMail.Location = new System.Drawing.Point(188, 125);
+            this.Chk_SendMail.Location = new System.Drawing.Point(188, 159);
             this.Chk_SendMail.Name = "Chk_SendMail";
             this.Chk_SendMail.Size = new System.Drawing.Size(149, 19);
             this.Chk_SendMail.TabIndex = 15;
@@ -195,11 +198,40 @@
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 126);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(52, 15);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "滞后：";
+            // 
+            // Txt_LagTime
+            // 
+            this.Txt_LagTime.Location = new System.Drawing.Point(70, 120);
+            this.Txt_LagTime.Name = "Txt_LagTime";
+            this.Txt_LagTime.Size = new System.Drawing.Size(112, 25);
+            this.Txt_LagTime.TabIndex = 17;
+            this.Txt_LagTime.Text = "5";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(197, 126);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(37, 15);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "分钟";
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(400, 225);
+            this.ClientSize = new System.Drawing.Size(400, 253);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.Txt_LagTime);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.Chk_SendMail);
             this.Controls.Add(this.Txt_Email);
             this.Controls.Add(this.label5);
@@ -218,7 +250,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "FrmMain";
-            this.Text = "HHUCheckin v2";
+            this.Text = "HHUCheckin v2.1";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.FrmMain_Resize);
@@ -245,6 +277,9 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox Chk_SendMail;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox Txt_LagTime;
+        private System.Windows.Forms.Label label7;
     }
 }
 

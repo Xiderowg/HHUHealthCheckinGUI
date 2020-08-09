@@ -45,8 +45,9 @@ namespace HHUCheckin.Modules
         /// <returns></returns>
         public bool Do()
         {
+            GlobalVars.log.Info("正在进行打卡");
             FrmMain.statusHandler?.Invoke(null, new Msg("正在进行打卡"));
-            // 先GET一下BASE，获取到WID和UserID
+            // 先GET一下BASE，获取到WID、UID以及历史打卡数据
             HttpClientHandler handler = new HttpClientHandler
             {
                 CookieContainer = this.cookie,
@@ -62,6 +63,7 @@ namespace HHUCheckin.Modules
             }
             catch (TaskCanceledException e)
             {
+                GlobalVars.log.Error($"打卡凭据获取失败，请检查网络链接，详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("打卡凭据获取失败，请检查网络链接"));
                 return false;
             }
@@ -79,26 +81,56 @@ namespace HHUCheckin.Modules
                     break;
                 }
             }
-            //string fullScript = doc.DocumentNode.Descendants()
-            //                 .Where(n => n.Name == "script")
-            //                 .First().InnerText;
+            // 解析WID和UID
+            object result;
+            string wid, uid;
             string[] fullScriptLines = fullScript.Split('\n');
             var engine = new Jurassic.ScriptEngine();
-            object result = engine.Evaluate("(function() { " + fullScriptLines[WIDLine] + "\n return _selfFormWid; })()");
-            string wid = result.ToString();
-            result = engine.Evaluate("(function() { " + fullScriptLines[UIDLine] + "\n return _userId; })()");
-            string uid = result.ToString();
+            try
+            {
+                result = engine.Evaluate("(function() { " + fullScriptLines[WIDLine] + "\n return _selfFormWid; })()");
+                wid = result.ToString();
+                result = engine.Evaluate("(function() { " + fullScriptLines[UIDLine] + "\n return _userId; })()");
+                uid = result.ToString();
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                GlobalVars.log.Error($"解析WID和UID失败，详细信息：{e.Message}");
+                FrmMain.statusHandler?.Invoke(null, new Msg("解析WID和UID失败"));
+                return false;
+            }
             // 计算得到真正的API接口
             string readAPI = API + $"?wid={wid}&userId={uid}";
             // 取得往日填报信息
             StringBuilder sb = new StringBuilder();
-            for (int i = FillBeginLine; i <= FillEndLine; i++)
-                sb.Append(fullScriptLines[i]).Append("\n");
-            result = engine.Evaluate("(function() { " + sb.ToString() + " return fillDetail; })()");
-            string json = JSONObject.Stringify(engine, result);
-            var fillDatas = JsonConvert.DeserializeObject<List<FillData>>(json);
-            // 将填报信息转换成打卡信息
-            var checkinData = Utils.ChangeType<FillData, CheckinData>(fillDatas[0]);
+            try
+            {
+                for (int i = FillBeginLine; i <= FillEndLine; i++)
+                    sb.Append(fullScriptLines[i]).Append("\n");
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                GlobalVars.log.Error($"解析历史打卡数据失败，详细信息：{e.Message}");
+                FrmMain.statusHandler?.Invoke(null, new Msg("解析历史打卡数据失败"));
+                return false;
+            }
+            // 生成打卡信息
+            CheckinData checkinData;
+            try
+            {
+                // 序列化填报信息
+                result = engine.Evaluate("(function() { " + sb.ToString() + " return fillDetail; })()");
+                string json = JSONObject.Stringify(engine, result);
+                var fillDatas = JsonConvert.DeserializeObject<List<FillData>>(json);
+                // 将填报信息转换成打卡信息
+                checkinData = Utils.ChangeType<FillData, CheckinData>(fillDatas[0]);
+            }
+            catch (Exception e)
+            {
+                GlobalVars.log.Error($"序列化历史打卡数据失败，详细信息：{e.Message}");
+                FrmMain.statusHandler?.Invoke(null, new Msg("序列化历史打卡数据失败"));
+                return false;
+            }
             var now = DateTime.Now;
             checkinData.DATETIME_CYCLE = now.ToString("yyyy/MM/dd");
             // 打卡
@@ -110,16 +142,19 @@ namespace HHUCheckin.Modules
             }
             catch (TaskCanceledException e)
             {
+                GlobalVars.log.Error($"传输打卡数据失败，请检查网络连接，详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("打卡失败，请检查网络链接"));
                 return false;
             }
             if (res.StatusCode == HttpStatusCode.OK)
             {
+                GlobalVars.log.Info("打卡成功！");
                 FrmMain.statusHandler?.Invoke(null, new Msg("打卡成功！"));
                 return true;
             }
             else
             {
+                GlobalVars.log.Error($"打卡失败！服务器返回代码：{res.StatusCode}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("打卡失败，未知原因"));
                 return false;
             }
