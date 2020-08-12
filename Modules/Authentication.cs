@@ -57,13 +57,13 @@ namespace HHUCheckin.Modules
                 UseCookies = true
             };
             HttpClient client = new HttpClient(handler);
-            client.Timeout = TimeSpan.FromSeconds(10);
+            client.Timeout = TimeSpan.FromSeconds(60);
             HttpResponseMessage res;
             try
             {
                 res = client.GetAsync(BASE).Result;
             }
-            catch (TaskCanceledException e)
+            catch (AggregateException e)
             {
                 GlobalVars.log.Error($"获取登录界面Cookie失败，可能是网络没有连接？详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("获取初始Cookie失败，请检查网络链接"));
@@ -84,7 +84,7 @@ namespace HHUCheckin.Modules
             {
                 res = client.SendAsync(req).Result;
             }
-            catch (TaskCanceledException e)
+            catch (AggregateException e)
             {
                 GlobalVars.log.Error($"登录账号失败，可能是网络没有连接？详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("登录账号失败，请检查网络链接"));

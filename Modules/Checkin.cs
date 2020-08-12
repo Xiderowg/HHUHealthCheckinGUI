@@ -54,14 +54,14 @@ namespace HHUCheckin.Modules
                 UseCookies = true
             };
             HttpClient client = new HttpClient(handler);
-            client.Timeout = TimeSpan.FromSeconds(10);
+            client.Timeout = TimeSpan.FromSeconds(60);
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
             HttpResponseMessage res;
             try
             {
                 res = client.GetAsync(BASE).Result;
             }
-            catch (TaskCanceledException e)
+            catch (AggregateException e)
             {
                 GlobalVars.log.Error($"打卡凭据获取失败，请检查网络链接，详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("打卡凭据获取失败，请检查网络链接"));
@@ -92,10 +92,24 @@ namespace HHUCheckin.Modules
                 wid = result.ToString();
                 result = engine.Evaluate("(function() { " + fullScriptLines[UIDLine] + "\n return _userId; })()");
                 uid = result.ToString();
+                // 检查uid是否合理
+                long.Parse(uid);
             }
             catch (IndexOutOfRangeException e)
             {
-                GlobalVars.log.Error($"解析WID和UID失败，详细信息：{e.Message}");
+                GlobalVars.log.Error($"解析WID和UID失败，错误类型1，详细信息：{e.Message}");
+                FrmMain.statusHandler?.Invoke(null, new Msg("解析WID和UID失败"));
+                return false;
+            }
+            catch (Jurassic.JavaScriptException e)
+            {
+                GlobalVars.log.Error($"解析WID和UID失败，错误类型2，详细信息：{e.Message}");
+                FrmMain.statusHandler?.Invoke(null, new Msg("解析WID和UID失败"));
+                return false;
+            }
+            catch (Exception e)
+            {
+                GlobalVars.log.Error($"解析WID和UID失败，错误类型3，详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("解析WID和UID失败"));
                 return false;
             }
@@ -140,7 +154,7 @@ namespace HHUCheckin.Modules
             {
                 res = client.SendAsync(req).Result;
             }
-            catch (TaskCanceledException e)
+            catch (AggregateException e)
             {
                 GlobalVars.log.Error($"传输打卡数据失败，请检查网络连接，详细信息：{e.Message}");
                 FrmMain.statusHandler?.Invoke(null, new Msg("打卡失败，请检查网络链接"));
