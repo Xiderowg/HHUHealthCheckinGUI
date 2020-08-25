@@ -60,8 +60,10 @@ namespace HHUCheckin
             // 读取滞后时间
             if (!int.TryParse(Txt_LagTime.Text, out LagTime))
                 LagTime = 5;
+            // 是否是本科生
+            bool isBachelor = Rad_IsBachelor.Checked;
             // 打卡
-            if (Checkin(userName, passWord))
+            if (Checkin(userName, passWord, isBachelor))
             {
                 GlobalVars.log.Info(string.Format("用户【{0}】打卡成功", userName));
                 MessageBox.Show("打卡成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -83,14 +85,14 @@ namespace HHUCheckin
         /// <param name="userName"></param>
         /// <param name="passWord"></param>
         /// <returns></returns>
-        private bool Checkin(string userName, string passWord)
+        private bool Checkin(string userName, string passWord, bool isBachelor)
         {
             // 打卡
             Authentication auth = new Authentication(userName, passWord);
             var cookies = auth.Do();
             if (cookies != null)
             {
-                Checkin checkin = new Checkin(cookies);
+                Checkin checkin = new Checkin(cookies, isBachelor);
                 return checkin.Do();
             }
             return false;
@@ -141,7 +143,9 @@ namespace HHUCheckin
                     string email = Txt_Email.Text.Trim();
                     if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(passWord))
                         return;
-                    todayChecked = Checkin(userName, passWord);
+                    // 是否是本科生
+                    bool isBachelor = Rad_IsBachelor.Checked;
+                    todayChecked = Checkin(userName, passWord, isBachelor);
                     // 如果打卡成功，发送邮件，更新界面上的时间
                     if (todayChecked)
                     {

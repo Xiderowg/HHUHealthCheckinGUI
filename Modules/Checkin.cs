@@ -18,6 +18,7 @@ namespace HHUCheckin.Modules
     public class Checkin
     {
         const string BASE = "http://form.hhu.edu.cn/pdc/formDesignApi/S/xznuPIjG";
+        const string BASE_BC = "http://form.hhu.edu.cn/pdc/formDesignApi/S/gUTwwojq";
         const string API = "http://form.hhu.edu.cn/pdc/formDesignApi/dataFormSave";
         const int WIDLine = 7;
         const int UIDLine = 10;
@@ -29,14 +30,21 @@ namespace HHUCheckin.Modules
         /// </summary>
         private CookieContainer cookie { get; set; }
 
+        /// <summary>
+        /// 是否是本科生
+        /// </summary>
+        public bool IsBachelor { get; private set; }
+
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="cookie"></param>
-        public Checkin(CookieContainer cookie)
+        /// <param name="cookie">经过认证后的CookieContainer</param>
+        /// <param name="isBachelor"></param>
+        public Checkin(CookieContainer cookie, bool isBachelor = false)
         {
             this.cookie = cookie;
+            this.IsBachelor = isBachelor;
         }
 
         /// <summary>
@@ -59,7 +67,7 @@ namespace HHUCheckin.Modules
             HttpResponseMessage res;
             try
             {
-                res = client.GetAsync(BASE).Result;
+                res = client.GetAsync(IsBachelor ? BASE_BC : BASE).Result;
             }
             catch (AggregateException e)
             {
@@ -114,7 +122,7 @@ namespace HHUCheckin.Modules
                 return false;
             }
             // 计算得到真正的API接口
-            string readAPI = API + $"?wid={wid}&userId={uid}";
+            string realAPI = API + $"?wid={wid}&userId={uid}";
             // 取得往日填报信息
             StringBuilder sb = new StringBuilder();
             try
@@ -149,7 +157,7 @@ namespace HHUCheckin.Modules
             checkinData.DATETIME_CYCLE = now.ToString("yyyy/MM/dd");
             // 打卡
             var nvc = Utils.ConvertToKeyValuePairs<CheckinData>(checkinData);
-            var req = new HttpRequestMessage(HttpMethod.Post, readAPI) { Content = new FormUrlEncodedContent(nvc) };
+            var req = new HttpRequestMessage(HttpMethod.Post, realAPI) { Content = new FormUrlEncodedContent(nvc) };
             try
             {
                 res = client.SendAsync(req).Result;
