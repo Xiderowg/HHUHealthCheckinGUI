@@ -30,6 +30,7 @@ namespace HHUCheckin
         /// <param name="e"></param>
         private void Btn_Checkin_Click(object sender, EventArgs e)
         {
+            StartUp();
             // 获取用户名和密码
             string userName = Txt_Username.Text.Trim();
             string passWord = Txt_Password.Text.Trim();
@@ -189,6 +190,31 @@ namespace HHUCheckin
                 this.WindowState = FormWindowState.Normal;
                 notifyIcon1.Visible = false;
                 this.ShowInTaskbar = true;
+            }
+        }
+        /// <summary>
+        /// 是否启用开机自启动
+        /// </summary>
+        private void StartUp()
+        {
+            string path = Application.StartupPath;
+            string keyName = path.Substring(path.LastIndexOf("\\") + 1);
+            Microsoft.Win32.RegistryKey Rkey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            if (this.chkStartUp.Checked)
+            {
+                if (Rkey == null)
+                {
+                    Rkey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+                }
+                Rkey.SetValue(keyName, path + @"\PeisDoctorHZ.exe");
+            }
+            else
+            {
+                if (Rkey != null)
+                {
+                    Rkey.DeleteValue(keyName, false);
+                }
             }
         }
     }

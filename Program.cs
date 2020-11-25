@@ -18,5 +18,6 @@ namespace HHUCheckin
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FrmMain());
         }
+        
     }
 }
