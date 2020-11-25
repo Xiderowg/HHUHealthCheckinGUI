@@ -1,5 +1,4 @@
-﻿using HHUCheckin;
-using HHUCheckin.Models;
+﻿using HHUCheckin.Models;
 using Jurassic.Library;
 using Newtonsoft.Json;
 using System;
@@ -8,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace HHUCheckin.Modules
 {
@@ -137,15 +135,25 @@ namespace HHUCheckin.Modules
                 return false;
             }
             // 生成打卡信息
-            CheckinData checkinData;
+            BachelorCheckinData bachelorCheckinData = default(BachelorCheckinData);
+            CheckinData checkinData = default(CheckinData);
             try
             {
                 // 序列化填报信息
                 result = engine.Evaluate("(function() { " + sb.ToString() + " return fillDetail; })()");
                 string json = JSONObject.Stringify(engine, result);
-                var fillDatas = JsonConvert.DeserializeObject<List<FillData>>(json);
+                dynamic fillDatas;
                 // 将填报信息转换成打卡信息
-                checkinData = Utils.ChangeType<FillData, CheckinData>(fillDatas[0]);
+                if (IsBachelor)
+                {
+                    fillDatas = JsonConvert.DeserializeObject<List<BachelorFillData>>(json);
+                    bachelorCheckinData = Utils.ChangeType<BachelorFillData, BachelorCheckinData>(fillDatas[0]);
+                }
+                else
+                {
+                    fillDatas = JsonConvert.DeserializeObject<List<FillData>>(json);
+                    checkinData = Utils.ChangeType<FillData, CheckinData>(fillDatas[0]);
+                }
             }
             catch (Exception e)
             {
@@ -153,10 +161,20 @@ namespace HHUCheckin.Modules
                 FrmMain.statusHandler?.Invoke(null, new Msg("序列化历史打卡数据失败"));
                 return false;
             }
+            // 赋值打卡数据的最后一项
             var now = DateTime.Now;
-            checkinData.DATETIME_CYCLE = now.ToString("yyyy/MM/dd");
+            var nvc = new List<KeyValuePair<string, string>>();
+            if (IsBachelor)
+            {
+                bachelorCheckinData.DATETIME_CYCLE = now.ToString("yyyy/MM/dd");
+                nvc = Utils.ConvertToKeyValuePairs<BachelorCheckinData>(bachelorCheckinData);
+            }
+            else
+            {
+                checkinData.DATETIME_CYCLE = now.ToString("yyyy/MM/dd");
+                nvc = Utils.ConvertToKeyValuePairs<CheckinData>(checkinData);
+            }
             // 打卡
-            var nvc = Utils.ConvertToKeyValuePairs<CheckinData>(checkinData);
             var req = new HttpRequestMessage(HttpMethod.Post, realAPI) { Content = new FormUrlEncodedContent(nvc) };
             try
             {

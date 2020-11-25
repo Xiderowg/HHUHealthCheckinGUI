@@ -39,4 +39,38 @@ namespace HHUCheckin.Models
         public string RADIO_769987 { get; set; }
         public string TEXT_91454 { get; set; }
     }
+    /// <summary>
+    /// 本科生历史填报数据
+    /// </summary>
+    public class BachelorFillData
+    {
+        public string RADIO_302717 { get; set; }
+        public string TEXT_515297 { get; set; }
+        public string XGH_336526 { get; set; }
+        public string RADIO_467360 { get; set; }
+        public string SELECT_459666 { get; set; }
+        public string SELECT_525884 { get; set; }
+        public string XM_1474 { get; set; }
+        public string RADIO_43840 { get; set; }
+        public string USERID { get; set; }
+        public string RADIO_314799 { get; set; }
+        public string RADIO_546905 { get; set; }
+        public string SFZJH_859173 { get; set; }
+        public string SELECT_941320 { get; set; }
+        public string RADIO_836972 { get; set; }
+        public string RADIO_209256 { get; set; }
+        public string TEXT_752063 { get; set; }
+        public string SELECT_814855 { get; set; }
+        public string TEXT_434598 { get; set; }
+        public string PICKER_956186 { get; set; }
+        public string RADIO_438985 { get; set; }
+        public string RADIO_579935 { get; set; }
+        public string CLRQ { get; set; } // CheckinData里没有
+        public string RADIO_138407 { get; set; }
+        public string TEXT_950231 { get; set; }
+        public string RADIO_853789 { get; set; }
+        public string RADIO_701131 { get; set; }
+        public string SELECT_125597 { get; set; }
+        public string TEXT_937296 { get; set; }
+    }
 }

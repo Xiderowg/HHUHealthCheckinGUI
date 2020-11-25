@@ -287,7 +287,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "FrmMain";
-            this.Text = "HHUCheckin v2.2";
+            this.Text = "HHUCheckin v2.3";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.FrmMain_Resize);
