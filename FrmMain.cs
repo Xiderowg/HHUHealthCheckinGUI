@@ -30,7 +30,7 @@ namespace HHUCheckin
         /// <param name="e"></param>
         private void Btn_Checkin_Click(object sender, EventArgs e)
         {
-            StartUp();
+            DoesStartUp();
             // 获取用户名和密码
             string userName = Txt_Username.Text.Trim();
             string passWord = Txt_Password.Text.Trim();
@@ -58,6 +58,14 @@ namespace HHUCheckin
                 ConfigHelper.UpdateAppConfig("Password", "");
                 ConfigHelper.UpdateAppConfig("EMail", "");
             }
+            //保存其他控件的情况
+            ConfigHelper.UpdateAppConfig("Rad_IsBachelor", this.Rad_IsBachelor.Checked);
+            ConfigHelper.UpdateAppConfig("Rad_IsGraduate", this.Rad_IsGraduate.Checked);
+            ConfigHelper.UpdateAppConfig("Chk_Rememberme", this.Chk_Rememberme.Checked);
+            ConfigHelper.UpdateAppConfig("Chk_AutoCheckin", this.Chk_AutoCheckin.Checked);
+            ConfigHelper.UpdateAppConfig("Chk_SendMail", this.Chk_SendMail.Checked);
+            ConfigHelper.UpdateAppConfig("Chk_StartUp", this.Chk_StartUp.Checked);
+
             // 读取滞后时间
             if (!int.TryParse(Txt_LagTime.Text, out LagTime))
                 LagTime = 5;
@@ -108,11 +116,17 @@ namespace HHUCheckin
         {
             // 绑定Handler
             statusHandler += OnStatusChanged;
-            // 读取保存的用户名
-            Txt_Username.Text = ConfigHelper.GetAppConfig("Username");
-            Txt_Password.Text = ConfigHelper.GetAppConfig("Password");
-            Txt_Email.Text = ConfigHelper.GetAppConfig("EMail");
-            Lbl_LastCheckinTime.Text = lastCheckTime.ToString("yyyy/MM/dd HH:mm");
+            // 读取保存的信息
+            this.Txt_Username.Text = ConfigHelper.GetAppConfig("Username");
+            this.Txt_Password.Text = ConfigHelper.GetAppConfig("Password");
+            this.Txt_Email.Text = ConfigHelper.GetAppConfig("EMail");
+            this.Lbl_LastCheckinTime.Text = lastCheckTime.ToString("yyyy/MM/dd HH:mm");
+            this.Rad_IsBachelor.Checked = ConfigHelper.GetAppConfig("Rad_IsBachelor") != string.Empty;
+            this.Rad_IsGraduate.Checked = ConfigHelper.GetAppConfig("Rad_IsGraduate") != string.Empty;
+            this.Chk_Rememberme.Checked = ConfigHelper.GetAppConfig("Chk_Rememberme") != string.Empty;
+            this.Chk_AutoCheckin.Checked = ConfigHelper.GetAppConfig("Chk_AutoCheckin") != string.Empty;
+            this.Chk_SendMail.Checked = ConfigHelper.GetAppConfig("Chk_SendMail") != string.Empty;
+            this.Chk_StartUp.Checked = ConfigHelper.GetAppConfig("Chk_StartUp") != string.Empty;
         }
 
         private void OnStatusChanged(object sender, Msg e)
@@ -195,13 +209,13 @@ namespace HHUCheckin
         /// <summary>
         /// 是否启用开机自启动
         /// </summary>
-        private void StartUp()
+        private void DoesStartUp()
         {
             string path = Application.StartupPath;
             string keyName = path.Substring(path.LastIndexOf("\\") + 1);
             Microsoft.Win32.RegistryKey Rkey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-            if (this.chkStartUp.Checked)
+            if (this.Chk_StartUp.Checked)
             {
                 if (Rkey == null)
                 {

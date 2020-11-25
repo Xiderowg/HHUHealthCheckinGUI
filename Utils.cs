@@ -73,7 +73,7 @@ namespace HHUCheckin
                     return config.AppSettings.Settings[strKey].Value.ToString();
                 }
             }
-            return "";
+            return string.Empty;
         }
 
         ///<summary>  
@@ -85,19 +85,31 @@ namespace HHUCheckin
         {
             string file = System.Windows.Forms.Application.ExecutablePath;
             Configuration config = ConfigurationManager.OpenExeConfiguration(file);
-            bool exist = false;
-            foreach (string key in config.AppSettings.Settings.AllKeys)
-            {
-                if (key == newKey)
-                {
-                    exist = true;
-                }
-            }
-            if (exist)
+            if (config.AppSettings.Settings.AllKeys.Any(x => x == newKey))
             {
                 config.AppSettings.Settings.Remove(newKey);
             }
             config.AppSettings.Settings.Add(newKey, newValue);
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
+        }
+        /// <summary>
+        /// 判断是否在配置中新增或删除key
+        /// </summary>
+        /// <param name="key">当前的key值</param>
+        /// <param name="addOrRemove">增加还是删除, true为新增, false为删除</param>
+        public static void UpdateAppConfig(string key, bool addOrRemove)
+        {
+            string file = System.Windows.Forms.Application.ExecutablePath;
+            Configuration config = ConfigurationManager.OpenExeConfiguration(file);
+            if (config.AppSettings.Settings.AllKeys.Any(x => x == key))
+            {
+                if (!addOrRemove) config.AppSettings.Settings.Remove(key);
+            }
+            else
+            {
+                if(addOrRemove) config.AppSettings.Settings.Add(key, "true");
+            }
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
         }

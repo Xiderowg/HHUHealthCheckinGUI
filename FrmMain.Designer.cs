@@ -52,7 +52,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.Rad_IsBachelor = new System.Windows.Forms.RadioButton();
             this.Rad_IsGraduate = new System.Windows.Forms.RadioButton();
-            this.chkStartUp = new System.Windows.Forms.CheckBox();
+            this.Chk_StartUp = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -269,22 +269,24 @@
             this.Rad_IsGraduate.Text = "研究生";
             this.Rad_IsGraduate.UseVisualStyleBackColor = true;
             // 
-            // chkStartUp
+            // Chk_StartUp
             // 
-            this.chkStartUp.AutoSize = true;
-            this.chkStartUp.Location = new System.Drawing.Point(304, 313);
-            this.chkStartUp.Name = "chkStartUp";
-            this.chkStartUp.Size = new System.Drawing.Size(124, 22);
-            this.chkStartUp.TabIndex = 22;
-            this.chkStartUp.Text = "开机自启动";
-            this.chkStartUp.UseVisualStyleBackColor = true;
+            this.Chk_StartUp.AutoSize = true;
+            this.Chk_StartUp.Checked = true;
+            this.Chk_StartUp.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Chk_StartUp.Location = new System.Drawing.Point(304, 313);
+            this.Chk_StartUp.Name = "Chk_StartUp";
+            this.Chk_StartUp.Size = new System.Drawing.Size(124, 22);
+            this.Chk_StartUp.TabIndex = 22;
+            this.Chk_StartUp.Text = "开机自启动";
+            this.Chk_StartUp.UseVisualStyleBackColor = true;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(450, 348);
-            this.Controls.Add(this.chkStartUp);
+            this.Controls.Add(this.Chk_StartUp);
             this.Controls.Add(this.Rad_IsGraduate);
             this.Controls.Add(this.Rad_IsBachelor);
             this.Controls.Add(this.label8);
@@ -343,7 +345,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.RadioButton Rad_IsBachelor;
         private System.Windows.Forms.RadioButton Rad_IsGraduate;
-        private System.Windows.Forms.CheckBox chkStartUp;
+        private System.Windows.Forms.CheckBox Chk_StartUp;
     }
 }
 
