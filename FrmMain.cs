@@ -146,7 +146,7 @@ namespace HHUCheckin
             if (int.TryParse(Txt_LagTime.Text, out LagTime))
                 LagTime = 5;
             // 更新预计打卡时间
-            if (now.Hour >= 18 && now.Hour <= 21 && now.Minute >= LagTime)
+            if (now.Hour >= 10 && now.Hour <= 21 && now.Minute >= LagTime)
             {
                 if (now.Day != lastCheckTime.Day)
                     todayChecked = false;
