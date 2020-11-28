@@ -242,7 +242,7 @@ namespace HHUCheckin
                 {
                     Rkey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
                 }
-                Rkey.SetValue(keyName, path + @"\PeisDoctorHZ.exe");
+                Rkey.SetValue(keyName, path + @"\HHUCheckin.exe");
             }
             else
             {
