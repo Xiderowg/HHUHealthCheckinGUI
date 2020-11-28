@@ -14,7 +14,6 @@ namespace HHUCheckin
     public partial class FrmMain : Form
     {
         public static EventHandler<Msg> statusHandler;
-        public DateTime lastCheckTime = new DateTime(1990, 1, 1);
         public bool todayChecked = false;
         private int LagTime = 5;
 
@@ -30,6 +29,11 @@ namespace HHUCheckin
         /// <param name="e"></param>
         private void Btn_Checkin_Click(object sender, EventArgs e)
         {
+            if(IsRepeatingCheck())
+            {
+                MessageBox.Show("今日已打过卡，无需重复打卡", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             DoesStartUp();
             // 获取用户名和密码
             string userName = Txt_Username.Text.Trim();
@@ -77,6 +81,10 @@ namespace HHUCheckin
                 GlobalVars.log.Info(string.Format("用户【{0}】打卡成功", userName));
                 MessageBox.Show("打卡成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Lbl_LastCheckinTime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
+                //增加缓存写入
+                ConfigHelper.UpdateAppConfig("LastCheckTime", Lbl_LastCheckinTime.Text);
+
                 if (Chk_SendMail.Checked)
                     Task.Run(() => MailHelper.SendMail(email, $"【{userName}】同学你好：\n 你已经于【{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}】打卡成功! \n HHU非官方快捷打卡平台"));
             }
@@ -86,6 +94,16 @@ namespace HHUCheckin
                 MessageBox.Show("打卡失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             statusHandler?.Invoke(null, new Msg("初始化完成"));
+        }
+
+        private bool IsRepeatingCheck()
+        {
+            DateTime lastCheckTime = Convert.ToDateTime(Lbl_LastCheckinTime.Text);
+            if (lastCheckTime.Year == DateTime.Now.Year && lastCheckTime.Month == DateTime.Now.Month && lastCheckTime.Day == DateTime.Now.Day)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -120,7 +138,7 @@ namespace HHUCheckin
             this.Txt_Username.Text = ConfigHelper.GetAppConfig("Username");
             this.Txt_Password.Text = ConfigHelper.GetAppConfig("Password");
             this.Txt_Email.Text = ConfigHelper.GetAppConfig("EMail");
-            this.Lbl_LastCheckinTime.Text = lastCheckTime.ToString("yyyy/MM/dd HH:mm");
+            this.Lbl_LastCheckinTime.Text = ConfigHelper.GetAppConfig("LastCheckTime") == string.Empty ? "1990-01-01 00:00:00": ConfigHelper.GetAppConfig("LastCheckTime");
             this.Rad_IsBachelor.Checked = ConfigHelper.GetAppConfig("Rad_IsBachelor") != string.Empty;
             this.Rad_IsGraduate.Checked = ConfigHelper.GetAppConfig("Rad_IsGraduate") != string.Empty;
             this.Chk_Rememberme.Checked = ConfigHelper.GetAppConfig("Chk_Rememberme") != string.Empty;
@@ -148,7 +166,7 @@ namespace HHUCheckin
             // 更新预计打卡时间
             if (now.Hour >= 10 && now.Hour <= 21 && now.Minute >= LagTime)
             {
-                if (now.Day != lastCheckTime.Day)
+                if (now.Day != Convert.ToDateTime(Lbl_LastCheckinTime.Text).Day)
                     todayChecked = false;
                 if (!todayChecked)
                 {
@@ -165,7 +183,10 @@ namespace HHUCheckin
                     if (todayChecked)
                     {
                         Lbl_LastCheckinTime.Text = now.ToString("yyyy/MM/dd HH:mm:ss");
-                        lastCheckTime = now;
+
+                        //增加缓存写入
+                        ConfigHelper.UpdateAppConfig("LastCheckTime", Lbl_LastCheckinTime.Text);
+
                         if (Chk_SendMail.Checked)
                             Task.Run(() => MailHelper.SendMail(email, $"【{userName}】同学你好：\n 你已经于【{now.ToString("yyyy/MM/dd HH:mm:ss")}】打卡成功! \n HHU非官方快捷打卡平台"));
                     }
